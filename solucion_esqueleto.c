@@ -27,8 +27,8 @@ const int TETROMINOS[7][4][4][4] = {
 };
 
 SDL_Color colors[8] = {
-    {30, 30, 30, 255}, {0, 255, 255, 255}, {0, 0, 255, 255}, {255, 165, 0, 255},
-    {255, 255, 0, 255}, {0, 255, 0, 255}, {128, 0, 128, 255}, {255, 0, 0, 255}
+    {30, 30, 30, 255},{255, 229, 236, 255},{255, 194, 209, 255},{255, 179, 198, 255},
+    {255, 143, 171, 255},{251, 111, 146, 255},{255, 77, 109, 255},{201, 24, 74, 255}     
 };
 
 // ========= ESTRUCTURAS DE DATOS =========
@@ -221,6 +221,7 @@ void gameBoardDelete(GameBoard* board) {
         free(actual);
         actual = siguiente;
         siguiente = (*actual).next;
+        
     }
 
 
@@ -233,7 +234,7 @@ void gameBoardDelete(GameBoard* board) {
             free(actualPiece);
             actualPiece = siguientePiece;
             siguientePiece = (*actualPiece).next;
-
+            
         }
         free((*board).queue_tail);
     }
@@ -247,6 +248,7 @@ void gameBoardDelete(GameBoard* board) {
             free(actualParticle);
             actualParticle = siguienteParticle;
             siguienteParticle = (*actualParticle).next;
+            
 
         }
         free(actualParticle);
@@ -269,27 +271,152 @@ void gameBoardAddParticle(GameBoard* board, float x, float y, int color) {
 }
 
 int gameBoardCheckAndClearLines(GameBoard* board) {
+    
+    RowNode* primero = (*board).first_row; //Asignamos a linea como el primero row.
+    RowNode* anterior = NULL;
+
+    RowNode* linea = primero;
+    RowNode* siguiente = (*linea).next;
+
+    int filasElim = 0;
+   
+    int celdaLlena = 0;
+
     // TODO: Recorrer la lista de RowNode.
-    // TODO: Si un RowNode tiene todas sus celdas > 0, desenlazarlo y hacer free().
-    // TODO: Crear un nuevo RowNode vacío (lleno de ceros).
-    // TODO: Insertar el nuevo RowNode en la CABEZA del tablero (board->first_row).
-    // TODO: Por cada celda destruida, invocar a gameBoardAddParticle().
-    printf("Función gameBoardCheckAndClearLines no implementada.\n");
+    for (int i = 0; i < 20; i++){
+
+        celdaLlena = 0;
+        
+
+        for (int j = 0; j<10; j++) {
+            if ((*linea).cells[j] != 0){
+                celdaLlena += 1;
+            }
+        }
+        // TODO: Si un RowNode tiene todas sus celdas > 0, desenlazarlo y hacer free().
+        //anterior = linea;
+        
+
+        if (celdaLlena == 10){
+
+            filasElim += 1;
+
+            if (i == 0){
+                
+                (*board).first_row = siguiente;
+                anterior = NULL;
+                
+            }else{
+
+                (*anterior).next = siguiente;
+                
+            }
+
+            free(linea);
+            linea = siguiente;
+
+        
+            // TODO: Crear un nuevo RowNode vacío (lleno de ceros).
+            RowNode* filaNueva = (RowNode*)malloc(sizeof(RowNode));
+
+            // TODO: Insertar el nuevo RowNode en la CABEZA del tablero (board->first_row).
+            (*board).first_row = filaNueva;
+            (*filaNueva).next = primero;
+            primero = (*board).first_row;
+
+            // TODO: Por cada celda destruida, invocar a gameBoardAddParticle().
+            //FALTA COMPLETAR
+            //FALTA COMPLETAR
+            //FALTA COMPLETAR
+            //FALTA COMPLETAR
+            
+        } else {
+            anterior = linea;
+            linea = siguiente;
+           
+        }
+
+        if (linea != 0){
+            
+            siguiente = (*linea).next;
+        }
+        
+        
+
+        
+    }
+
+  
+    
+    
+    //printf("Función gameBoardCheckAndClearLines no implementada.\n");
     return 0;
 }
 
+
 void gameBoardEnqueuePiece(GameBoard* board, int type) {
+
     // TODO: Crear un PieceQueueNode con el 'type'.
-    // TODO: Insertarlo al final de la cola (queue_tail) y actualizar punteros.
-    printf("Función gameBoardEnqueuePiece no implementada.\n");
+    PieceQueueNode* piece = (PieceQueueNode*)malloc(sizeof(PieceQueueNode));
+    (*piece).type = type;
+    (*piece).next = NULL;
+
+    if((*board).queue_head == NULL){
+
+        (*board).queue_head = piece;
+       
+    }else{
+        // TODO: Insertarlo al final de la cola (queue_tail) y actualizar punteros.
+
+        //PieceQueueNode* actual = (*board).queue_head;
+        //PieceQueueNode* siguiente = (*actual).next;
+        PieceQueueNode* cola = (*board).queue_tail;
+        (*cola).next = piece;
+    
+    }
+    /*PREGUNTAR SOBRE SI LIBERAR COLA*/
+    /*PREGUNTAR SOBRE SI LIBERAR COLA*/
+    /*PREGUNTAR SOBRE SI LIBERAR COLA*/
+    /*PREGUNTAR SOBRE SI LIBERAR COLA*/
+    (*board).queue_tail = piece;
+    
+
+    return;
+    //printf("Función gameBoardEnqueuePiece no implementada.\n");
 }
+
+
 
 int gameBoardDequeuePiece(GameBoard* board, int* out_type) {
     // TODO: Si la cola está vacía, retornar 0.
+    if ((*board).queue_head == NULL){
+        return 0;
+    }
+
     // TODO: Extraer el primer nodo (queue_head).
     // TODO: Guardar el type en la variable out_type, liberar el nodo y actualizar el head.
-    printf("Función gameBoardDequeuePiece no implementada.\n");
-    return 0;
+    PieceQueueNode* primero = (*board).queue_head;
+    PieceQueueNode* siguiente = (*primero).next;
+    out_type = (*primero).type;
+    free(primero);
+
+    if(siguiente == NULL){
+
+        (*board).queue_head = NULL;
+        (*board).queue_tail = NULL;
+
+    }else{
+
+        (*board).queue_head = siguiente;
+    }
+
+    return 1;
+
+
+
+    
+    //printf("Función gameBoardDequeuePiece no implementada.\n");
+    //return 0;
 }
 
 // ========= LOGICA DE DIBUJADO Y COLISIONES (NO MODIFICAR) =========
