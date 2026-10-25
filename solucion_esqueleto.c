@@ -218,10 +218,9 @@ void gameBoardDelete(GameBoard* board) {
     RowNode* siguiente = (*actual).next;
 
     for(int i=0; i<20;i++){
-        free(actual);
-        actual = siguiente;
+        free(actual); //liberamos el nodo actual.
+        actual = siguiente; //reasignamos el puntero actual al siguiente nodo.
         siguiente = (*actual).next;
-        
     }
 
 
@@ -231,12 +230,11 @@ void gameBoardDelete(GameBoard* board) {
         PieceQueueNode* siguientePiece = (*actualPiece).next;
 
         while((*actualPiece).next != 0){
-            free(actualPiece);
-            actualPiece = siguientePiece;
+            free(actualPiece); //liberamos el nodo actual.
+            actualPiece = siguientePiece; //reasignamos el puntero actualpiece al siguiente nodo.
             siguientePiece = (*actualPiece).next;
-            
         }
-        free((*board).queue_tail);
+        free((*board).queue_tail); //liberamos el ultimo nodo de la cola.
     }
 
     // TODO: Recorrer y liberar todos los ParticleNode.
@@ -245,13 +243,13 @@ void gameBoardDelete(GameBoard* board) {
         ParticleNode* siguienteParticle = (*actualParticle).next;
 
         while((*actualParticle).next != 0){
-            free(actualParticle);
-            actualParticle = siguienteParticle;
+            free(actualParticle); //liberamos el nodo actual.
+            actualParticle = siguienteParticle; //reasignamos el puntero actualparticle al siguiente nodo.
             siguienteParticle = (*actualParticle).next;
             
 
         }
-        free(actualParticle);
+        free(actualParticle); //liberamos el ultimo nodo de la lista.
     }
 
 
@@ -272,47 +270,46 @@ void gameBoardAddParticle(GameBoard* board, float x, float y, int color) {
 
 int gameBoardCheckAndClearLines(GameBoard* board) {
     
-    RowNode* primero = (*board).first_row; //Asignamos a linea como el primero row.
-    RowNode* anterior = NULL;
+    RowNode* primero = (*board).first_row; //creamos un puntero al primer nodo de la lista.
 
-    RowNode* linea = primero;
+    //CAMBIO
+    RowNode* anterior = primero; //asignamos por defecto el puntero anterior al primer nodo.
+
+    RowNode* linea = primero; //creamos una copia del puntero primero para recorrer la lista.
     RowNode* siguiente = (*linea).next;
 
-    int filasElim = 0;
+    int filasElim = 0; //contador de filas eliminadas para saber cuantas filas nuevas agregar
    
-    int celdaLlena = 0;
+    int celdasLlenas = 0; //contador de celdas llenas para saber si la fila esta llena o no.
 
     // TODO: Recorrer la lista de RowNode.
     for (int i = 0; i < 20; i++){
 
-        celdaLlena = 0;
-        
+        celdasLlenas = 0; //reiniciamos el contador de celdas llenas para cada fila.
 
         for (int j = 0; j<10; j++) {
-            if ((*linea).cells[j] != 0){
-                celdaLlena += 1;
+            if ((*linea).cells[j] != 0){ //si la celda actual contiene algo, incrementamos el contador.
+                celdasLlenas += 1;
             }
         }
         // TODO: Si un RowNode tiene todas sus celdas > 0, desenlazarlo y hacer free().
         //anterior = linea;
         
 
-        if (celdaLlena == 10){
+        if (celdasLlenas == 10){ //si las 10 celdas de la fila estan llenas, eliminamos la fila.
 
             filasElim += 1;
 
-            if (i == 0){
+            if (i == 0){ //caso borde: primera fila, anterior se mantiene en null.
                 
                 (*board).first_row = siguiente;
-                anterior = NULL;
+                anterior = primero; //RECORDATORIO: me parece redundante.
                 
             }else{
-
-                (*anterior).next = siguiente;
-                
+                (*anterior).next = siguiente; //si no es la primera fila, *anterior.next apunta al siguiente nodo
             }
 
-            free(linea);
+            free(linea); //liberamos el nodo al que apunta linea y reasignamos linea
             linea = siguiente;
 
         
