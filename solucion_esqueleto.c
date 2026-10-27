@@ -98,6 +98,11 @@ char* strDuplicate(char* src){
 
     char* copia = (char*)malloc(sizeof(char) * (longitud + 1));  //Creamos un puntero para reotrnar la copia del str.
 
+    //si malloc falla y copia apunta "a la nada"
+    if (copia == 0){
+        return NULL;
+    }
+
     for (int i=0; i < longitud; i++){
         copia[i] = src[i];  //Copiamos 1 a 1.
     }
@@ -118,11 +123,18 @@ int strCompare(char* s1, char* s2){
     //Para este ejercicio tomamos en cuenta que los signos son reperesentados como ascii.
 
     int result = 0; //Inicializamos la respuesta como si fueran iguales ambos str.
+
     int lonS1 = len(s1); //Calculamos la longitud del str1.
     int lonS2 = len(s2); //Calculamos la longitud del str2.
 
 
     int i = 0;
+    //el while funciona de la siguiente manera: si un caracter es menor alfabeticamente,
+    //automaticamente esa palabra es menor, result vale 1 y el while no se ejecuta.
+    //mismo caso al reves. Y en caso de que dos strings sean iguales pero una de ellas tenga
+    //un caracter agregado, como casa vs casaa, la menor de ellas es la mas corta.
+
+
     while (i<lonS1 && i<lonS2 && result != 1 && result != -1){
         if(s1[i] < s2[i]){
             result = 1;
@@ -132,6 +144,7 @@ int strCompare(char* s1, char* s2){
         } 
 
         i += 1;
+
     }
 
     return result;
@@ -246,20 +259,15 @@ void gameBoardDelete(GameBoard* board) {
             free(actualParticle); //liberamos el nodo actual.
             actualParticle = siguienteParticle; //reasignamos el puntero actualparticle al siguiente nodo.
             siguienteParticle = (*actualParticle).next;
-            
-
         }
         free(actualParticle); //liberamos el ultimo nodo de la lista.
     }
-
 
     // TODO: Finalmente, liberar la estructura GameBoard.
     free(board);
 
     //printf("Función gameBoardDelete no implementada.\n");
 }
-
-
 
 void gameBoardAddParticle(GameBoard* board, float x, float y, int color) {
     // TODO: Crear un ParticleNode con memoria dinámica.
@@ -583,9 +591,44 @@ int inicializar() {
 void correrTests() {
     // TODO: Implementar los casos minimos del enunciado. Por ejemplo:
     //  - strDuplicate: "", "x", un string con distintos caracteres.
+    if (strDuplicate("") != ""){
+        //forzamos un error para que devuelva 0 (siendo funcion void)
+        return 0;
+    }
+    if (strDuplicate("x") != "x"){
+        return 0;
+    }
+    if (strDuplicate("H0la MundO!?") != "H0la MundO!?"){
+        return 0;
+    }
+
     //  - strCompare: "" vs "", "a" vs "a", y una desigualdad en ambos sentidos (s1/s2 y s2/s1).
+    if (strCompare("", "") != 0){
+        return 0;
+    }
+    if (strCompare("a", "a") != 0){
+        return 0;
+    }
+    if (strCompare("casa", "casas") != 1){
+        return 0;
+    }
+    if (strCompare("casas", "casa") != -1){
+        return 0;
+    }
+
     //  - strConcatenate: "" + "abc" y "hola " + "mundo". Los argumentos deben crearse con
     //    strDuplicate, porque strConcatenate los libera (no pasar literales).
+    int tamano = 5;
+    char* a[tamano] = ['H', 'o', 'l', 'a', ' '];
+    char* b[tamano] = ['m', 'u', 'n', 'd', 'o'];
+    if (strCompare(strDuplicate(""), strDuplicate("abc")) != "abc"){
+        return 0;
+    }
+    if (strCompare(strDuplicate(a), strDuplicate(b)) != "Hola mundo"){
+        return 0;
+    }
+
+
     //  - Cola: 5 push y 6 pop; el 6to debe devolver 0 y dejar queue_head y queue_tail en NULL.
     //    Verificar tambien que un push posterior funcione.
     //  - Tablero: llenar la fila de indice 19 (la de abajo), llamar a
