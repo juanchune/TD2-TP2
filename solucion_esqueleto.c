@@ -631,9 +631,98 @@ void correrTests() {
 
     //  - Cola: 5 push y 6 pop; el 6to debe devolver 0 y dejar queue_head y queue_tail en NULL.
     //    Verificar tambien que un push posterior funcione.
+
+    GameBoard* tablero = (board*)malloc(sizeof(board));
+    for(int i = 0; i < 5; i++){
+        gameBoardEnqueuePiece(tablero, i);
+    }
+
+    int tipo = 0;
+    int retorno;
+    for(int i=0; i<6, i++){
+        retorno = gameBoardDequeuePiece(tablero, &tipo);
+    }
+
+    if (retorno != 0 || (*tablero).queue_tail != NULL || (*tablero).queue_head != NULL){
+        return 0;
+    }
+
+    gameBoardEnqueuePiece(tablero, 1);
+    if ((*tablero).queue_tail == NULL){
+        return 0;
+    }
+
+    
+
     //  - Tablero: llenar la fila de indice 19 (la de abajo), llamar a
-    //    gameBoardCheckAndClearLines y comprobar que first_row es la fila nueva vacia y que
-    //    la lista sigue teniendo 20 filas.
+    //    gameBoardCheckAndClearLines y comprobar que devuelve 1,
+    //    que first_row es la fila nueva vacia y que la lista sigue teniendo 20 filas.
+    RowNode* fila = (*tablero).first_row;
+    //voy hasta la 19° fila (desde 0)
+    for(int i=0; i<20; i++){
+        fila = (*fila).next;
+    }
+
+    //lleno las celdas de numeros 2 (arbitrario, puede ser cualquiera distinto de 0).
+    for(int i=0; i<10; i++){
+        (*fila).cells[i] = 2;
+    }
+
+    //chequeo que la funcion de borrar filas devuelve 1
+    int res;
+    res = gameBoardCheckAndClearLines(tablero);
+    if(res != 1) return 0;
+
+    //chequeo que la nueva primera fila esta vacia, evaluando celda por celda
+    int i = 0;
+    while(i<10){
+        if((*tablero).first_row.cells[i] != 0) return 0;
+        i++;
+    }
+
+    //verifico que el tablero tiene 20 filass
+    i = 0;
+    fila = (*tablero).first_row;
+    while(i<20){
+        fila = (*fila).next;
+        //si la fila actual apunta a 0 antes de llegar a la 19° fila (desde 0), no hay 20.
+        if (fila == NULL) return 0;
+        i++;
+    }
+
+
+    //Llenar las filas 0 y 1 y llamar a gameBoardCheckAndClearLines, comprobando que
+    //devuelve 2 y que la lista sigue teniendo 20 filas.
+    fila = (*tablero).first_row;
+    i = 0;
+    int fila = 0;
+    while(i<10 && fila < 2){
+        (*fila).cells[i] = 2;
+        i++;
+        if(i == 9){
+            fila = (*fila.next);
+            i = 0;
+            fila++;
+        }
+    }
+
+    //chequeo que la funcion de borrar filas devuelve 2
+    res = gameBoardCheckAndClearLines(tablero);
+    if(res != 2){
+        return 0;
+    }
+
+    //verifico que el tablero tiene 20 filas
+    i = 0;
+    fila = (*tablero).first_row;
+    while(i<20){
+        fila = (*fila).next;
+        //si la fila actual apunta a 0 antes de llegar a la 19° fila (desde 0), no hay 20.
+        if (fila == NULL) return 0;
+        i++;
+    }
+
+
     // Liberar toda la memoria pedida en los tests (strings y tableros).
     printf("Tests no implementados.\n");
 }
