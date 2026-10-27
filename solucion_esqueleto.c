@@ -632,21 +632,28 @@ void correrTests() {
     //  - Cola: 5 push y 6 pop; el 6to debe devolver 0 y dejar queue_head y queue_tail en NULL.
     //    Verificar tambien que un push posterior funcione.
 
+    //hago 5 push con 5 piezas de 5 tipos diferentes
     GameBoard* tablero = (board*)malloc(sizeof(board));
     for(int i = 0; i < 5; i++){
         gameBoardEnqueuePiece(tablero, i);
     }
 
+    //hago los 6 push
+    //DUDA: QUE CORNO ES OUT_TYPE Y QUE LE TENGO QUE PASAR
+    //DUDA: QUE CORNO ES OUT_TYPE Y QUE LE TENGO QUE PASAR
+    //DUDA: QUE CORNO ES OUT_TYPE Y QUE LE TENGO QUE PASAR
     int tipo = 0;
     int retorno;
     for(int i=0; i<6, i++){
         retorno = gameBoardDequeuePiece(tablero, &tipo);
     }
 
+    //chequeo si el ultimo pop devuelve 0 y que la cola y la cabeza sean NULL (al mismo tiempo)
     if (retorno != 0 || (*tablero).queue_tail != NULL || (*tablero).queue_head != NULL){
         return 0;
     }
 
+    //verifico si despues de un push nuevo, la cola tiene algo o no
     gameBoardEnqueuePiece(tablero, 1);
     if ((*tablero).queue_tail == NULL){
         return 0;
