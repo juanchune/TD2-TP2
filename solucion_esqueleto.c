@@ -207,7 +207,7 @@ GameBoard* gameBoardNew() {
                 borrarActual = punteroSiguiente; //Redireccionamos la flecha del actual al siguiente.
                 punteroSiguiente = (*borrarActual).next; //Redireccionamos el puntero del siguiente al siguiente puntero.
             }
-            printf("Función gameBoardNew no implementada.\n");
+            //printf("Función gameBoardNew no implementada.\n");
             return NULL; //Devolvemos NULL.
         }
         (*actual).next = nuevo; //Guardamos en nuestro nodo actual el nuevo (el siguiente).
@@ -270,10 +270,28 @@ void gameBoardDelete(GameBoard* board) {
 }
 
 void gameBoardAddParticle(GameBoard* board, float x, float y, int color) {
-    // TODO: Crear un ParticleNode con memoria dinámica.
-    // TODO: Inicializar x, y, velocidades aleatorias y un life_timer.
-    // TODO: Agregarlo al principio de la lista enlazada simple de partículas.
-    printf("Función gameBoardAddParticle no implementada.\n");
+    ParticleNode* nuevo = (ParticleNode*)malloc(sizeof(ParticleNode));
+
+    if (nuevo == NULL) { 
+        return; 
+    
+    }
+
+    (*nuevo).x = x;
+    (*nuevo).y = y;
+    (*nuevo).vel_x = ((rand() % 100) / 10.0f) - 5.0f;   //copiado del juego base
+    (*nuevo).vel_y = ((rand() % 50) / -10.0f) - 2.0f;  //copiado del juego base 
+    (*nuevo).color = color;
+    (*nuevo).life_timer = 30 + (rand() % 30);
+
+    if((*board).first_particle != NULL){
+     
+        (*nuevo).next = (*board).first_particle;
+    }
+
+    (*board).first_particle = nuevo;
+    
+     
 }
 
 int gameBoardCheckAndClearLines(GameBoard* board) {
@@ -402,7 +420,7 @@ int gameBoardDequeuePiece(GameBoard* board, int* out_type) {
     // TODO: Guardar el type en la variable out_type, liberar el nodo y actualizar el head.
     PieceQueueNode* primero = (*board).queue_head;
     PieceQueueNode* siguiente = (*primero).next;
-    out_type = (*primero).type;
+    out_type = &(*primero).type;
     free(primero);
 
     if(siguiente == NULL){
@@ -591,41 +609,49 @@ int inicializar() {
 void correrTests() {
     // TODO: Implementar los casos minimos del enunciado. Por ejemplo:
     //  - strDuplicate: "", "x", un string con distintos caracteres.
-    if (strDuplicate("") != ""){
+    char a[] = {0};
+    if (strDuplicate(a) != a){
         //forzamos un error para que devuelva 0 (siendo funcion void)
-        return 0;
+        return ;
     }
-    if (strDuplicate("x") != "x"){
-        return 0;
+
+    char b[] = {'x',0};
+    if (strDuplicate(b) != b){
+        return ;
     }
-    if (strDuplicate("H0la MundO!?") != "H0la MundO!?"){
-        return 0;
+
+    char c[] ={'H','0','l','a',' ','M','u','n','d','O','!','?',0};
+
+    if (strDuplicate(c) != c){
+        return ;
     }
 
     //  - strCompare: "" vs "", "a" vs "a", y una desigualdad en ambos sentidos (s1/s2 y s2/s1).
     if (strCompare("", "") != 0){
-        return 0;
+        return ;
     }
     if (strCompare("a", "a") != 0){
-        return 0;
+        return ;
     }
     if (strCompare("casa", "casas") != 1){
-        return 0;
+        return ;
     }
     if (strCompare("casas", "casa") != -1){
-        return 0;
+        return ;
     }
 
     //  - strConcatenate: "" + "abc" y "hola " + "mundo". Los argumentos deben crearse con
     //    strDuplicate, porque strConcatenate los libera (no pasar literales).
-    int tamano = 5;
-    char* a[tamano] = ['H', 'o', 'l', 'a', ' '];
-    char* b[tamano] = ['m', 'u', 'n', 'd', 'o'];
+    //int tamano = 5;
+    char d[] = {'H', 'o', 'l', 'a', ' ', 0};
+
+    char e[] = {'m', 'u', 'n', 'd', 'o', 0};
+
     if (strCompare(strDuplicate(""), strDuplicate("abc")) != "abc"){
-        return 0;
+        return ;
     }
-    if (strCompare(strDuplicate(a), strDuplicate(b)) != "Hola mundo"){
-        return 0;
+    if (strCompare(strDuplicate(d), strDuplicate(e)) != "Hola mundo"){
+        return ;
     }
 
 
@@ -633,7 +659,7 @@ void correrTests() {
     //    Verificar tambien que un push posterior funcione.
 
     //hago 5 push con 5 piezas de 5 tipos diferentes
-    GameBoard* tablero = (board*)malloc(sizeof(board));
+    GameBoard* tablero = (GameBoard*)malloc(sizeof(GameBoard));
     for(int i = 0; i < 5; i++){
         gameBoardEnqueuePiece(tablero, i);
     }
@@ -644,19 +670,19 @@ void correrTests() {
     //DUDA: QUE CORNO ES OUT_TYPE Y QUE LE TENGO QUE PASAR
     int tipo = 0;
     int retorno;
-    for(int i=0; i<6, i++){
+    for(int i=0; i<6; i++){
         retorno = gameBoardDequeuePiece(tablero, &tipo);
     }
 
     //chequeo si el ultimo pop devuelve 0 y que la cola y la cabeza sean NULL (al mismo tiempo)
     if (retorno != 0 || (*tablero).queue_tail != NULL || (*tablero).queue_head != NULL){
-        return 0;
+        return ;
     }
 
     //verifico si despues de un push nuevo, la cola tiene algo o no
     gameBoardEnqueuePiece(tablero, 1);
     if ((*tablero).queue_tail == NULL){
-        return 0;
+        return ;
     }
 
     
@@ -678,12 +704,14 @@ void correrTests() {
     //chequeo que la funcion de borrar filas devuelve 1
     int res;
     res = gameBoardCheckAndClearLines(tablero);
-    if(res != 1) return 0;
+    if(res != 1) return ;
 
     //chequeo que la nueva primera fila esta vacia, evaluando celda por celda
     int i = 0;
     while(i<10){
-        if((*tablero).first_row.cells[i] != 0) return 0;
+        if ((*(*tablero).first_row).cells[i] != 0) {
+            return ;
+        } 
         i++;
     }
 
@@ -693,7 +721,7 @@ void correrTests() {
     while(i<20){
         fila = (*fila).next;
         //si la fila actual apunta a 0 antes de llegar a la 19° fila (desde 0), no hay 20.
-        if (fila == NULL) return 0;
+        if (fila == NULL) return ;
         i++;
     }
 
@@ -707,7 +735,7 @@ void correrTests() {
         (*fila).cells[i] = 2;
         i++;
         if(i == 9){
-            fila = (*fila.next);
+            fila = ((*fila).next);
             i = 0;
             fila++;
         }
@@ -716,7 +744,7 @@ void correrTests() {
     //chequeo que la funcion de borrar filas devuelve 2
     res = gameBoardCheckAndClearLines(tablero);
     if(res != 2){
-        return 0;
+        return ;
     }
 
     //verifico que el tablero tiene 20 filas
@@ -725,13 +753,13 @@ void correrTests() {
     while(i<20){
         fila = (*fila).next;
         //si la fila actual apunta a 0 antes de llegar a la 19° fila (desde 0), no hay 20.
-        if (fila == NULL) return 0;
+        if (fila == NULL) return ;
         i++;
     }
 
 
     // Liberar toda la memoria pedida en los tests (strings y tableros).
-    printf("Tests no implementados.\n");
+    //printf("Tests no implementados.\n");
 }
 
 // Compara contra "--test" sin depender de string.h ni del Ejercicio 1.
