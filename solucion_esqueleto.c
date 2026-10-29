@@ -174,52 +174,6 @@ char* strConcatenate(char* src1, char* src2) {
 
 // ========= EJERCICIO 2: FUNCIONES A IMPLEMENTAR (EL TP) =========
 
-GameBoard* gameBoardNew() {
-
-    // TODO: Reservar memoria para el GameBoard.
-    game_board = (GameBoard*)malloc(sizeof(GameBoard));  //Reserva memoria para un objeto de tipo GameBoard
-    (*game_board).score = 0;   //Inicializa el puntaje del objeto en 0.
-    (*game_board).tick_timer = 0; //Inicializa el tick_timer del objeto en 0.
-
-     // TODO: Inicializar queue_head, queue_tail y first_particle en NULL.
-    (*game_board).queue_head = NULL;
-    (*game_board).queue_tail = NULL;
-    (*game_board).first_particle = NULL;
-   
-    // TODO: Usar un bucle para hacer malloc de las 20 filas (RowNode) y conectarlas.
-    RowNode* cabeza = (RowNode*)malloc(sizeof(RowNode));
-    if(cabeza == 0){
-        return NULL;
-    }
-    // TODO: El puntero first_row debe apuntar al primero de esos nodos.
-    (*game_board).first_row = cabeza;
-    RowNode* actual = cabeza;
-
-    //Crear el enlazado de malloc.
-    for (int i = 0;i < 20; i++){
-        RowNode* nuevo = (RowNode*)malloc(sizeof(RowNode)); //Guardamos un espacio de memoria para el numero nodo.
-        if(nuevo == 0){  //Si el malloc fallo
-            RowNode* borrarActual = cabeza;  //Guardamos el que queremos borrar
-            RowNode * punteroSiguiente = (*borrarActual).next;  //Guardamos el puntero del siguiente para poder borrarlo despues y no perderlo.
-
-            for(int j = 0; j<=i; j++){ //Vamos a repetir con todos los nodos, desde el 0 hasta la posición del i.
-                free(borrarActual);  //Liberamos el actual.
-                borrarActual = punteroSiguiente; //Redireccionamos la flecha del actual al siguiente.
-                punteroSiguiente = (*borrarActual).next; //Redireccionamos el puntero del siguiente al siguiente puntero.
-            }
-            //printf("Función gameBoardNew no implementada.\n");
-            return NULL; //Devolvemos NULL.
-        }
-        (*actual).next = nuevo; //Guardamos en nuestro nodo actual el nuevo (el siguiente).
-        actual = nuevo;  //Redireccionamos el actual a nuevo para avanzar y trabajar con el siguiete.
-        (*nuevo).next = 0;  //Lo dejamos en 0 por si es la ultima vuelta y tiene que apuntar a NULL. 
-                            //(en caos dde que no sea la ultima se va a modifcar solo x le estructura del codigo).
-    }
-   
-    return game_board;
-}
-
-
 
 void gameBoardDelete(GameBoard* board) {
     // TODO: Debe tolerar board == NULL.
@@ -234,7 +188,7 @@ void gameBoardDelete(GameBoard* board) {
     // RowNode* aux = actual; ????
     // RowNode* aux = actual; ????
 
-    for(int i=0; i<20;i++){
+    for(int i=0; i< GRID_ROWS;i++){
         free(actual); //liberamos el nodo actual.
         actual = siguiente; //reasignamos el puntero actual al siguiente nodo.
         siguiente = (*actual).next;
@@ -273,25 +227,70 @@ void gameBoardDelete(GameBoard* board) {
     //printf("Función gameBoardDelete no implementada.\n");
 }
 
+
+GameBoard* gameBoardNew() {
+
+    // TODO: Reservar memoria para el GameBoard.
+    GameBoard* game_board = (GameBoard*)malloc(sizeof(GameBoard));  //Reserva memoria para un objeto de tipo GameBoard
+    (*game_board).score = 0;   //Inicializa el puntaje del objeto en 0.
+    (*game_board).tick_timer = 0; //Inicializa el tick_timer del objeto en 0.
+
+     // TODO: Inicializar queue_head, queue_tail y first_particle en NULL.
+    (*game_board).queue_head = NULL;
+    (*game_board).queue_tail = NULL;
+    (*game_board).first_particle = NULL;
+   
+    // TODO: Usar un bucle para hacer malloc de las 20 filas (RowNode) y conectarlas.
+    RowNode* cabeza = (RowNode*)malloc(sizeof(RowNode));
+    if(cabeza == 0){
+        //gameBoardDelete(game_board);
+        return 0;
+    }
+
+    // TODO: El puntero first_row debe apuntar al primero de esos nodos.
+    (*game_board).first_row = cabeza;
+    RowNode* actual = cabeza;
+
+    //Crear el enlazado de malloc.
+    for (int i = 0;i < GRID_ROWS; i++){
+        RowNode* nuevo = (RowNode*)malloc(sizeof(RowNode)); //Guardamos un espacio de memoria para el numero nodo.
+        if(nuevo == 0){  //Si el malloc fallo
+            gameBoardDelete(game_board);
+            return 0; //Devolvemos NULL.
+        }
+        (*actual).next = nuevo; //Guardamos en nuestro nodo actual el nuevo (el siguiente).
+        actual = nuevo;  //Redireccionamos el actual a nuevo para avanzar y trabajar con el siguiete.
+        (*nuevo).next = 0;  //Lo dejamos en 0 por si es la ultima vuelta y tiene que apuntar a NULL. 
+                            //(en caos dde que no sea la ultima se va a modifcar solo x le estructura del codigo).
+    }
+   
+    return game_board;
+}
+
+
+
+
 void gameBoardAddParticle(GameBoard* board, float x, float y, int color) {
+
+    // TODO: Crear un ParticleNode con memoria dinámica.
+
+    
     ParticleNode* nuevo = (ParticleNode*)malloc(sizeof(ParticleNode));
 
     if (nuevo == NULL) { 
         return;
     }
-
+    
+    // TODO: Inicializar x, y, velocidades aleatorias y un life_timer
     (*nuevo).x = x;
-    (*nuevo).y = y;
+    (*nuevo).y = y;    
     (*nuevo).vel_x = ((rand() % 100) / 10.0f) - 5.0f;   //copiado del juego base
     (*nuevo).vel_y = ((rand() % 50) / -10.0f) - 2.0f;  //copiado del juego base 
     (*nuevo).color = color;
     (*nuevo).life_timer = 30 + (rand() % 30);
 
-    if((*board).first_particle != NULL){
-     
-        (*nuevo).next = (*board).first_particle;
-    }
-
+    // TODO: Agregarlo al principio de la lista enlazada simple de partículas.
+    (*nuevo).next = (*board).first_particle;
     (*board).first_particle = nuevo;
     
      
@@ -311,12 +310,16 @@ int gameBoardCheckAndClearLines(GameBoard* board) {
    
     int celdasLlenas = 0; //contador de celdas llenas para saber si la fila esta llena o no.
 
+    float x;
+    float y;
+    int color;
+
     // TODO: Recorrer la lista de RowNode.
-    for (int i=0; i<20; i++){
+    for (int i=0; i < GRID_ROWS ; i++){
 
         celdasLlenas = 0; //reiniciamos el contador de celdas llenas para cada fila.
 
-        for (int j=0; j<10; j++) {
+        for (int j=0; j < GRID_COLS; j++) {
             if ((*linea).cells[j] != 0){ //si la celda actual contiene algo, incrementamos el contador.
                 celdasLlenas += 1;
             }
@@ -325,7 +328,7 @@ int gameBoardCheckAndClearLines(GameBoard* board) {
         //anterior = linea;
         
 
-        if (celdasLlenas == 10){ //si las 10 celdas de la fila estan llenas, eliminamos la fila.
+        if (celdasLlenas == GRID_COLS){ //si las 10 celdas de la fila estan llenas, eliminamos la fila.
 
             filasElim += 1;
 
@@ -339,11 +342,12 @@ int gameBoardCheckAndClearLines(GameBoard* board) {
             }
 
             // TODO: Por cada celda destruida, invocar a gameBoardAddParticle().
-            int color; //guardo el color de la celda actual
-            for(int j=0; j<10; j++){
+            /*int color; //guardo el color de la celda actual
+            for(int j=0; j<GRID_COLS; j++){
                 color = (*linea).cells[j];
                 gameBoardAddParticle(board, i, j, color);
-            }
+            }*/
+
             free(linea); //liberamos el nodo al que apunta linea y reasignamos linea
             linea = siguiente;
 
@@ -351,13 +355,33 @@ int gameBoardCheckAndClearLines(GameBoard* board) {
             // TODO: Crear un nuevo RowNode vacío (lleno de ceros).
             RowNode* filaNueva = (RowNode*)malloc(sizeof(RowNode));
             for(int j=0; j < GRID_ROWS; j++){
-                filaNueva[j] = 0;
+                (*filaNueva).cells[j] = 0;
             }
 
             // TODO: Insertar el nuevo RowNode en la CABEZA del tablero (board->first_row).
             (*board).first_row = filaNueva;
             (*filaNueva).next = primero;
             primero = (*board).first_row;
+
+    
+            
+            // TODO: Por cada celda destruida, invocar a gameBoardAddParticle().
+            for (int j = 0; j < GRID_COLS; j++) {
+                 x = OFFSET_X + i * CELL_SIZE + CELL_SIZE / 2; //CELL_SIZE es una constante definida al principio de tu solucion_esqueleto.c, en la linea 14
+                 y = OFFSET_Y + j * CELL_SIZE + CELL_SIZE / 2;  //Estas formulas la copiamos del juego_base.c.
+                 color = linea->cells[j];
+                gameBoardAddParticle(board, x, y, color);
+            }
+
+            // Desenlazar la fila llena y liberarla
+            if (anterior == NULL) {
+                board->first_row = siguiente;
+            } else {
+                anterior->next = siguiente;
+            }
+            free(linea);
+
+
 
             
         } else {
@@ -612,11 +636,11 @@ void correrTests() {
     //  - strDuplicate: "", "x", un string con distintos caracteres.
     char a[] = {0};
     char b[] = {'x',0};
-    char c[] ={'H','0','l','a',' ','M','u','n','d','O','!','?',0};
+    char c[] = {'H','0','l','a',' ','M','u','n','d','O','!','?',0};
     char d[] = {'H', 'o', 'l', 'a', ' ', 0};
     char e[] = {'m', 'u', 'n', 'd', 'o', 0};
     char f[] = {'c', 'a', 's', 'a', 0};
-    char g[] = {'c', 'a', 's', 'a', 's', 0}
+    char g[] = {'c', 'a', 's', 'a', 's', 0};
     char h[] = {'a', 'b', 'c', 0};
     char k[] = {'H', 'o', 'l', 'a', ' ', 'm', 'u', 'n', 'd', 'o', 0};
 
@@ -675,10 +699,13 @@ void correrTests() {
     //DUDA: QUE CORNO ES OUT_TYPE Y QUE LE TENGO QUE PASAR
     //DUDA: QUE CORNO ES OUT_TYPE Y QUE LE TENGO QUE PASAR
     //DUDA: QUE CORNO ES OUT_TYPE Y QUE LE TENGO QUE PASAR
-    int* tipo = (*(*tablero).queue_head).type; //NO SE SI ESTA BIEN LA SINTAXIS
+    PieceQueueNode* pieza = (*tablero).queue_head;
+    int tipo = (*pieza).type;
+    int* ptr_tipo = &tipo;
+
     int retorno;
     for(int i=0; i<6; i++){
-        retorno = gameBoardDequeuePiece(tablero, tipo);
+        retorno = gameBoardDequeuePiece(tablero, ptr_tipo);
     }
 
     //chequeo si el ultimo pop devuelve 0 y que la cola y la cabeza sean NULL (al mismo tiempo)
@@ -737,14 +764,15 @@ void correrTests() {
     //devuelve 2 y que la lista sigue teniendo 20 filas.
     fila = (*tablero).first_row;
     i = 0;
-    int fila = 0;
-    while(i<10 && fila < 2){
+    int cant_fila = 0;
+    
+    while(i<GRID_COLS && cant_fila < 2){
         (*fila).cells[i] = 2;
         i++;
         if(i == 9){
             fila = ((*fila).next);
             i = 0;
-            fila++;
+            cant_fila++;
         }
     }
 
@@ -757,7 +785,7 @@ void correrTests() {
     //verifico que el tablero tiene 20 filas
     i = 0;
     fila = (*tablero).first_row;
-    while(i<20){
+    while(i<GRID_ROWS){
         fila = (*fila).next;
         //si la fila actual apunta a 0 antes de llegar a la 19° fila (desde 0), no hay 20.
         if (fila == NULL) return ;
