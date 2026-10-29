@@ -277,8 +277,7 @@ void gameBoardAddParticle(GameBoard* board, float x, float y, int color) {
     ParticleNode* nuevo = (ParticleNode*)malloc(sizeof(ParticleNode));
 
     if (nuevo == NULL) { 
-        return; 
-    
+        return;
     }
 
     (*nuevo).x = x;
@@ -313,11 +312,11 @@ int gameBoardCheckAndClearLines(GameBoard* board) {
     int celdasLlenas = 0; //contador de celdas llenas para saber si la fila esta llena o no.
 
     // TODO: Recorrer la lista de RowNode.
-    for (int i = 0; i < 20; i++){
+    for (int i=0; i<20; i++){
 
         celdasLlenas = 0; //reiniciamos el contador de celdas llenas para cada fila.
 
-        for (int j = 0; j<10; j++) {
+        for (int j=0; j<10; j++) {
             if ((*linea).cells[j] != 0){ //si la celda actual contiene algo, incrementamos el contador.
                 celdasLlenas += 1;
             }
@@ -339,14 +338,20 @@ int gameBoardCheckAndClearLines(GameBoard* board) {
                 (*anterior).next = siguiente; //si no es la primera fila, *anterior.next apunta al siguiente nodo
             }
 
+            // TODO: Por cada celda destruida, invocar a gameBoardAddParticle().
+            int color; //guardo el color de la celda actual
+            for(int j=0; j<10; j++){
+                color = (*linea).cells[j];
+                gameBoardAddParticle(board, i, j, color);
+            }
             free(linea); //liberamos el nodo al que apunta linea y reasignamos linea
             linea = siguiente;
 
         
             // TODO: Crear un nuevo RowNode vacío (lleno de ceros).
             RowNode* filaNueva = (RowNode*)malloc(sizeof(RowNode));
-            for(int i=0; i < GRID_ROWS; I++){
-                filaNueva[i] = 0;
+            for(int j=0; j < GRID_ROWS; j++){
+                filaNueva[j] = 0;
             }
 
             // TODO: Insertar el nuevo RowNode en la CABEZA del tablero (board->first_row).
@@ -354,11 +359,6 @@ int gameBoardCheckAndClearLines(GameBoard* board) {
             (*filaNueva).next = primero;
             primero = (*board).first_row;
 
-            // TODO: Por cada celda destruida, invocar a gameBoardAddParticle().
-            //FALTA COMPLETAR
-            //FALTA COMPLETAR
-            //FALTA COMPLETAR
-            //FALTA COMPLETAR
             
         } else {
             anterior = linea;
@@ -621,43 +621,32 @@ void correrTests() {
     char k[] = {'H', 'o', 'l', 'a', ' ', 'm', 'u', 'n', 'd', 'o', 0};
 
 
-    if (strDuplicate(a_Din) != a_Din){
-        //forzamos un error para que devuelva 0 (siendo funcion void)
+    if (strCompare(strDuplicate(a), a) != 0){
         printf("error en strDuplicate");
-        // return ;
     }
 
-    if (strDuplicate(b_Din) != b_Din){
+    if (strCompare(strDuplicate(b), b) != 0){
         printf("error en strDuplicate");
-        // return ;
     }
 
-    if (strDuplicate(c_Din) != c_Din){
+    if (strCompare(strDuplicate(c), c) != 0){
         printf("error en strDuplicate");
-        // return ;
     }
 
     //  - strCompare: "" vs "", "a" vs "a", y una desigualdad en ambos sentidos (s1/s2 y s2/s1).
-    char* copiaA_Din = (char*) malloc(sizeof(char) * 1);
-    copiaA_Din = *a_Din;
-    if (strCompare(a_Din, copiaA_Din) != 0){
+    
+    if (strCompare(strDuplicate(a), strDuplicate(a)) != 0){
         printf("error en strCompare");
-        // return ;
     }
 
-    char* copiaB_Din = (char*) malloc(sizeof(char) * 2);
-    copiaB_Din = *b_Din;
-    if (strCompare(b_Din, copiaB_Din) != 0){
+    if (strCompare(strDuplicate(b), strDuplicate(b)) != 0){
         printf("error en strCompare");
-        // return ;
     }
-    if (strCompare(f_Din, g_Din) != 1){
+    if (strCompare(strDuplicate(f), strDuplicate(g)) != 1){
         printf("error en strCompare");
-        // return ;
     }
-    if (strCompare(g_Din, f_Din) != -1){
+    if (strCompare(strDuplicate(g), strDuplicate(f)) != -1){
         printf("error en strCompare");
-        // return ;
     }
 
     //  - strConcatenate: "" + "abc" y "hola " + "mundo". Los argumentos deben crearse con
@@ -666,15 +655,12 @@ void correrTests() {
 
 
 
-    if (strCompare(strDuplicate(a_Din), strDuplicate(h_Din)) != h_Din){
-        printf("error en strCompare");
-        // return;
+    if (strConcatenate(strDuplicate(a), strDuplicate(h)) != h){
+        printf("error en strConcatenate");
     }
-    if (strCompare(strDuplicate(d_Din), strDuplicate(e_Din)) != k_Din){
-        printf("error en strCompare");
-        // return;
+    if (strConcatenate(strDuplicate(d), strDuplicate(e)) != k){
+        printf("error en strConcatenate");
     }
-    free(a_Din);
 
     //  - Cola: 5 push y 6 pop; el 6to debe devolver 0 y dejar queue_head y queue_tail en NULL.
     //    Verificar tambien que un push posterior funcione.
@@ -689,10 +675,10 @@ void correrTests() {
     //DUDA: QUE CORNO ES OUT_TYPE Y QUE LE TENGO QUE PASAR
     //DUDA: QUE CORNO ES OUT_TYPE Y QUE LE TENGO QUE PASAR
     //DUDA: QUE CORNO ES OUT_TYPE Y QUE LE TENGO QUE PASAR
-    int tipo = 0;
+    int* tipo = (*(*tablero).queue_head).type; //NO SE SI ESTA BIEN LA SINTAXIS
     int retorno;
     for(int i=0; i<6; i++){
-        retorno = gameBoardDequeuePiece(tablero, &tipo);
+        retorno = gameBoardDequeuePiece(tablero, tipo);
     }
 
     //chequeo si el ultimo pop devuelve 0 y que la cola y la cabeza sean NULL (al mismo tiempo)
