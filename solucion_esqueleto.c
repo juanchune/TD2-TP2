@@ -229,6 +229,10 @@ void gameBoardDelete(GameBoard* board) {
     // TODO: Recorrer y liberar todos los RowNode con free().
     RowNode* actual = (*board).first_row;
     RowNode* siguiente = (*actual).next;
+    // RowNode* aux = actual; ????
+    // RowNode* aux = actual; ????
+    // RowNode* aux = actual; ????
+    // RowNode* aux = actual; ????
 
     for(int i=0; i<20;i++){
         free(actual); //liberamos el nodo actual.
@@ -341,6 +345,9 @@ int gameBoardCheckAndClearLines(GameBoard* board) {
         
             // TODO: Crear un nuevo RowNode vacío (lleno de ceros).
             RowNode* filaNueva = (RowNode*)malloc(sizeof(RowNode));
+            for(int i=0; i < GRID_ROWS; I++){
+                filaNueva[i] = 0;
+            }
 
             // TODO: Insertar el nuevo RowNode en la CABEZA del tablero (board->first_row).
             (*board).first_row = filaNueva;
@@ -356,7 +363,6 @@ int gameBoardCheckAndClearLines(GameBoard* board) {
         } else {
             anterior = linea;
             linea = siguiente;
-           
         }
 
         if (linea != 0){
@@ -364,13 +370,8 @@ int gameBoardCheckAndClearLines(GameBoard* board) {
             siguiente = (*linea).next;
         }
         
-        
-
-        
     }
 
-  
-    
     
     //printf("Función gameBoardCheckAndClearLines no implementada.\n");
     return 0;
@@ -618,42 +619,7 @@ void correrTests() {
     char g[] = {'c', 'a', 's', 'a', 's', 0}
     char h[] = {'a', 'b', 'c', 0};
     char k[] = {'H', 'o', 'l', 'a', ' ', 'm', 'u', 'n', 'd', 'o', 0};
-    //Din es un prefijo para pasar punteros dinamicos a las funciones para ser testeadas
-    char* a_Din = (char*) malloc (sizeof(char) * 1);
-    a_Din[0] = 0;
 
-    // char* p = &s;
-    
-    char* b_Din = (char*) malloc (sizeof(char) * 2);
-    b_Din[0] = 'x';
-    b_Din[1] = 0;
-
-    char* c_Din = (char*) malloc (sizeof(char) * 13);
-    for(int i=0; i<13; i++){
-        c_Din[i] = c[i];
-    }
-
-    char* d_Din = (char*) malloc (sizeof(char) * 6);
-    char* e_Din = (char*) malloc (sizeof(char) * 6);
-    char* g_Din = (char*) malloc (sizeof(char) * 6);
-    for(int i=0; i<6; i++){
-        d_Din[i] = d[i];
-        e_Din[i] = e[i];
-        g_Din[i] = g[i];
-    }
-
-    char* f_Din = (char*) malloc (sizeof(char) * 5);
-    char* h_Din = (char*) malloc (sizeof(char) * 4);
-    for(int i=0; i<4; i++){
-        f_Din[i] = f[i];
-        h_Din[i] = h[i];
-    }
-    f_din[4] = 0;
-
-    char* k_Din = (char*) malloc (sizeof(char) * 11);
-    for(int i=0; i<11; i++){
-        k_Din[i] = k[i];
-    }
 
     if (strDuplicate(a_Din) != a_Din){
         //forzamos un error para que devuelva 0 (siendo funcion void)
@@ -672,11 +638,16 @@ void correrTests() {
     }
 
     //  - strCompare: "" vs "", "a" vs "a", y una desigualdad en ambos sentidos (s1/s2 y s2/s1).
-    if (strCompare(a_Din, a_Din) != 0){
+    char* copiaA_Din = (char*) malloc(sizeof(char) * 1);
+    copiaA_Din = *a_Din;
+    if (strCompare(a_Din, copiaA_Din) != 0){
         printf("error en strCompare");
         // return ;
     }
-    if (strCompare(b_Din, b_Din) != 0){
+
+    char* copiaB_Din = (char*) malloc(sizeof(char) * 2);
+    copiaB_Din = *b_Din;
+    if (strCompare(b_Din, copiaB_Din) != 0){
         printf("error en strCompare");
         // return ;
     }
