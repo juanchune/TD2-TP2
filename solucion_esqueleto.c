@@ -180,20 +180,19 @@ void gameBoardDelete(GameBoard* board) {
     if(board == 0){
         return; 
     }
+
     // TODO: Recorrer y liberar todos los RowNode con free().
-    RowNode* actual = (*board).first_row;
-    RowNode* siguiente = (*actual).next;
-    // RowNode* aux = actual; ????
-    // RowNode* aux = actual; ????
-    // RowNode* aux = actual; ????
-    // RowNode* aux = actual; ????
+    if ((*board).first_row != 0) {
+        RowNode* actual = (*board).first_row;
+        RowNode* siguiente = (*actual).next;
 
-    for(int i=0; i< GRID_ROWS;i++){
-        free(actual); //liberamos el nodo actual.
-        actual = siguiente; //reasignamos el puntero actual al siguiente nodo.
-        siguiente = (*actual).next;
+        while (siguiente != 0) {
+            free(actual);                // liberamos el nodo actual.
+            actual = siguiente;          // avanzamos al siguiente.
+            siguiente = (*actual).next;
+        }
+        free(actual);                    // liberamos el ultimo nodo.
     }
-
 
     // TODO: Recorrer y liberar todos los ParticlePiece.
     PieceQueueNode* actualPiece = (*board).queue_head;
@@ -227,11 +226,21 @@ void gameBoardDelete(GameBoard* board) {
     //printf("Función gameBoardDelete no implementada.\n");
 }
 
+void inicializarCero (RowNode* fila){
+    for (int i = 0; i < GRID_COLS; i++){
+        (*fila).cells[i] = 0;
+    }
+    return;
+} 
 
 GameBoard* gameBoardNew() {
 
     // TODO: Reservar memoria para el GameBoard.
     GameBoard* game_board = (GameBoard*)malloc(sizeof(GameBoard));  //Reserva memoria para un objeto de tipo GameBoard
+    if (game_board == 0){
+        return NULL;
+    }
+   
     (*game_board).score = 0;   //Inicializa el puntaje del objeto en 0.
     (*game_board).tick_timer = 0; //Inicializa el tick_timer del objeto en 0.
 
@@ -239,25 +248,30 @@ GameBoard* gameBoardNew() {
     (*game_board).queue_head = NULL;
     (*game_board).queue_tail = NULL;
     (*game_board).first_particle = NULL;
+    (*game_board).current_piece.active = 0;
    
     // TODO: Usar un bucle para hacer malloc de las 20 filas (RowNode) y conectarlas.
     RowNode* cabeza = (RowNode*)malloc(sizeof(RowNode));
     if(cabeza == 0){
-        //gameBoardDelete(game_board);
+        free(game_board);
         return 0;
     }
 
     // TODO: El puntero first_row debe apuntar al primero de esos nodos.
     (*game_board).first_row = cabeza;
+    (*cabeza).next = 0;
     RowNode* actual = cabeza;
+    inicializarCero(actual);
 
     //Crear el enlazado de malloc.
-    for (int i = 0;i < GRID_ROWS; i++){
+    for (int i = 0;i < (GRID_ROWS-1); i++){
         RowNode* nuevo = (RowNode*)malloc(sizeof(RowNode)); //Guardamos un espacio de memoria para el numero nodo.
         if(nuevo == 0){  //Si el malloc fallo
             gameBoardDelete(game_board);
             return 0; //Devolvemos NULL.
         }
+
+        inicializarCero(nuevo);
         (*actual).next = nuevo; //Guardamos en nuestro nodo actual el nuevo (el siguiente).
         actual = nuevo;  //Redireccionamos el actual a nuevo para avanzar y trabajar con el siguiete.
         (*nuevo).next = 0;  //Lo dejamos en 0 por si es la ultima vuelta y tiene que apuntar a NULL. 
@@ -297,14 +311,12 @@ void gameBoardAddParticle(GameBoard* board, float x, float y, int color) {
 }
 
 int gameBoardCheckAndClearLines(GameBoard* board) {
+
+
     
-    RowNode* primero = (*board).first_row; //creamos un puntero al primer nodo de la lista.
-
-    //CAMBIO
-    RowNode* anterior = primero; //asignamos por defecto el puntero anterior al primer nodo.
-
-    RowNode* linea = primero; //creamos una copia del puntero primero para recorrer la lista.
-    RowNode* siguiente = (*linea).next;
+    RowNode* linea = (*board).first_row; //creamos un puntero al primer nodo de la lista.
+    RowNode* anterior = 0; //asignamos por defecto el puntero anterior a 0.
+    RowNode* siguiente = (*linea).next; //asignamos el siguiente.
 
     int filasElim = 0; //contador de filas eliminadas para saber cuantas filas nuevas agregar
    
@@ -315,8 +327,7 @@ int gameBoardCheckAndClearLines(GameBoard* board) {
     int color;
 
     // TODO: Recorrer la lista de RowNode.
-    for (int i=0; i < GRID_ROWS ; i++){
-
+    while (linea != NULL){
         celdasLlenas = 0; //reiniciamos el contador de celdas llenas para cada fila.
 
         for (int j=0; j < GRID_COLS; j++) {
@@ -445,7 +456,7 @@ int gameBoardDequeuePiece(GameBoard* board, int* out_type) {
     // TODO: Guardar el type en la variable out_type, liberar el nodo y actualizar el head.
     PieceQueueNode* primero = (*board).queue_head;
     PieceQueueNode* siguiente = (*primero).next;
-    out_type = &(*primero).type;
+    *out_type = (*primero).type;
     free(primero);
 
     if(siguiente == NULL){
