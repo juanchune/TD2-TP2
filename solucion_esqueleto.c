@@ -610,50 +610,100 @@ void correrTests() {
     // TODO: Implementar los casos minimos del enunciado. Por ejemplo:
     //  - strDuplicate: "", "x", un string con distintos caracteres.
     char a[] = {0};
-    if (strDuplicate(a) != a){
-        //forzamos un error para que devuelva 0 (siendo funcion void)
-        return ;
-    }
-
     char b[] = {'x',0};
-    if (strDuplicate(b) != b){
-        return ;
+    char c[] ={'H','0','l','a',' ','M','u','n','d','O','!','?',0};
+    char d[] = {'H', 'o', 'l', 'a', ' ', 0};
+    char e[] = {'m', 'u', 'n', 'd', 'o', 0};
+    char f[] = {'c', 'a', 's', 'a', 0};
+    char g[] = {'c', 'a', 's', 'a', 's', 0}
+    char h[] = {'a', 'b', 'c', 0};
+    char k[] = {'H', 'o', 'l', 'a', ' ', 'm', 'u', 'n', 'd', 'o', 0};
+    //Din es un prefijo para pasar punteros dinamicos a las funciones para ser testeadas
+    char* a_Din = (char*) malloc (sizeof(char) * 1);
+    a_Din[0] = 0;
+
+    // char* p = &s;
+    
+    char* b_Din = (char*) malloc (sizeof(char) * 2);
+    b_Din[0] = 'x';
+    b_Din[1] = 0;
+
+    char* c_Din = (char*) malloc (sizeof(char) * 13);
+    for(int i=0; i<13; i++){
+        c_Din[i] = c[i];
     }
 
-    char c[] ={'H','0','l','a',' ','M','u','n','d','O','!','?',0};
+    char* d_Din = (char*) malloc (sizeof(char) * 6);
+    char* e_Din = (char*) malloc (sizeof(char) * 6);
+    char* g_Din = (char*) malloc (sizeof(char) * 6);
+    for(int i=0; i<6; i++){
+        d_Din[i] = d[i];
+        e_Din[i] = e[i];
+        g_Din[i] = g[i];
+    }
 
-    if (strDuplicate(c) != c){
-        return ;
+    char* f_Din = (char*) malloc (sizeof(char) * 5);
+    char* h_Din = (char*) malloc (sizeof(char) * 4);
+    for(int i=0; i<4; i++){
+        f_Din[i] = f[i];
+        h_Din[i] = h[i];
+    }
+    f_din[4] = 0;
+
+    char* k_Din = (char*) malloc (sizeof(char) * 11);
+    for(int i=0; i<11; i++){
+        k_Din[i] = k[i];
+    }
+
+    if (strDuplicate(a_Din) != a_Din){
+        //forzamos un error para que devuelva 0 (siendo funcion void)
+        printf("error en strDuplicate");
+        // return ;
+    }
+
+    if (strDuplicate(b_Din) != b_Din){
+        printf("error en strDuplicate");
+        // return ;
+    }
+
+    if (strDuplicate(c_Din) != c_Din){
+        printf("error en strDuplicate");
+        // return ;
     }
 
     //  - strCompare: "" vs "", "a" vs "a", y una desigualdad en ambos sentidos (s1/s2 y s2/s1).
-    if (strCompare("", "") != 0){
-        return ;
+    if (strCompare(a_Din, a_Din) != 0){
+        printf("error en strCompare");
+        // return ;
     }
-    if (strCompare("a", "a") != 0){
-        return ;
+    if (strCompare(b_Din, b_Din) != 0){
+        printf("error en strCompare");
+        // return ;
     }
-    if (strCompare("casa", "casas") != 1){
-        return ;
+    if (strCompare(f_Din, g_Din) != 1){
+        printf("error en strCompare");
+        // return ;
     }
-    if (strCompare("casas", "casa") != -1){
-        return ;
+    if (strCompare(g_Din, f_Din) != -1){
+        printf("error en strCompare");
+        // return ;
     }
 
     //  - strConcatenate: "" + "abc" y "hola " + "mundo". Los argumentos deben crearse con
     //    strDuplicate, porque strConcatenate los libera (no pasar literales).
     //int tamano = 5;
-    char d[] = {'H', 'o', 'l', 'a', ' ', 0};
 
-    char e[] = {'m', 'u', 'n', 'd', 'o', 0};
 
-    if (strCompare(strDuplicate(""), strDuplicate("abc")) != "abc"){
-        return ;
+
+    if (strCompare(strDuplicate(a_Din), strDuplicate(h_Din)) != h_Din){
+        printf("error en strCompare");
+        // return;
     }
-    if (strCompare(strDuplicate(d), strDuplicate(e)) != "Hola mundo"){
-        return ;
+    if (strCompare(strDuplicate(d_Din), strDuplicate(e_Din)) != k_Din){
+        printf("error en strCompare");
+        // return;
     }
-
+    free(a_Din);
 
     //  - Cola: 5 push y 6 pop; el 6to debe devolver 0 y dejar queue_head y queue_tail en NULL.
     //    Verificar tambien que un push posterior funcione.
