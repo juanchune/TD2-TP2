@@ -500,7 +500,12 @@ int spawnNextPiece(GameBoard* board) {
         board->current_piece.active = 1;
         gameBoardEnqueuePiece(board, rand() % 7);
         if (!canMove(board, board->current_piece.col, board->current_piece.row, board->current_piece.rotation)) {
-            printf("GAME OVER. Puntaje final: %d\n", board->score);
+            printf(" _._     _,-'\"\"`-._\n"
+        "(,-.`._,'(       |\\`-/|\n"
+        "    `-.-' \\ )-`( , o o)\n"
+        "          `-    \\`_`\"'-\n"
+        "GAME OVER.\n"
+        "Puntaje final: %d\n", board->score);
             board->current_piece.active = 0;
             return 0;   // main sale del loop y libera tablero y SDL
         }
