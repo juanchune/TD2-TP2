@@ -13,12 +13,12 @@ CFLAGS = -g -Wall `pkg-config --cflags sdl2`
 LIBS = `pkg-config --libs sdl2`
 
 # Nombre del archivo ejecutable que se generara
-EXEC = tetris
+EXEC = solucion_esqueleto
 
 # Archivos fuente (.c) a compilar.
 # Descomentar la linea correspondiente al archivo que se quiera compilar:
 
-SRCS = juego_base.c
+SRCS = solucion_esqueleto.c
 #SRCS = solucion_esqueleto.c
 #SRCS = tp_resuelto.c
 
